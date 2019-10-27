@@ -1,10 +1,10 @@
-import numpy as np
+import matplotlib.pyplot as plt
 
-def main():
-    x=np.ones(100).T
+x = range(10)
+y1 = [elem*2 for elem in x]
+plt.plot(x, y1)
 
-    print(x)
+y2 = [elem**2 for elem in x]
+plt.plot(x, y2, 'r--')
 
-
-if __name__ == '__main__':
-    main()
+plt.show()
