@@ -71,3 +71,33 @@ def perceptron(X,w,y):
 
 plt.show()
 
+
+
+
+def perceptron_pocket(X,w,y):
+    ###感知機口袋算法，顯示n次叠代後最好的權重和分類直線，並畫出分類直線###
+    ###輸入特征，初始權重，目標###
+    best_len=len(compare(X,w,y))  #初始化最少的分類錯誤點個數
+    best_w=w  #初始化口袋裏最好的參數w
+    for i in range(100):
+        print("錯誤分類點有{}個。".format(len(compare(X,w,y))))
+        w=update(X,w,y)
+        #如果當前參數下分類錯誤點個數小於最少的分類錯誤點個數，那麽更新最少的分類錯誤點個數和口袋裏最好的參數w
+        if len(compare(X,w,y))<best_len:
+            best_len=len(compare(X,w,y))
+            best_w=w
+
+    print("參數best_w:{}".format(best_w))
+    print("分類直線:{}x1+{}x2+{}=0".format(best_w[0][0],best_w[1][0],best_w[2][0]))
+    print("最少分類錯誤點的個數:{}個".format(best_len))
+    line_x=np.linspace(-3,3,10)
+    line_y=(-best_w[2]-best_w[0]*line_x)/best_w[1]
+    ax.plot(line_x,line_y)
+
+def update(X,w,y):
+    ###用於更新權重w，返回更新後的權重w###
+    ###輸入特征，權重，目標###
+    num=len(compare(X,w,y)) #分類錯誤點的個數
+    w=w+y[compare(X,w,y)][np.random.choice(num)]*X[compare(X,w,y),:][np.random.choice(num)].reshape(3,1)
+    return w
+
