@@ -8,7 +8,7 @@ DEFINE_DATA_CSV = 0
 DEFINE_DATA_RANDOM = 0
 DEFINE_DATA_SEPARABLE = 0
 DEFINE_DATA_NON_SEPARABLE = 1
-DEFINE_POCKET_ITERS = 1000
+DEFINE_POCKET_ITERS = 10000
 
 
 def compare(X, w, y):
@@ -67,11 +67,11 @@ def perceptron(X, w, y):
         cnt, iters = len(loc_wrong), iters + 1
 
         if (cnt <= 0 or (DEFINE_DATA_NON_SEPARABLE and iters >= DEFINE_POCKET_ITERS)): break
-        print('迭代次数：{} 分类错误个数：{}'.format(iters, cnt))
+        # print('迭代次数：{} 分类错误个数：{}'.format(iters, cnt))
         w = update(X, w, y, loc_wrong)
 
     end = time.clock()  # 计算耗时，请注释print
-    # print('PLA耗时：{}'.format(end - start))
+    print('最终迭代次数：{} PLA耗时：{}'.format(iters, end - start))
     print('参数W：{}'.format(w))
     line_x = np.linspace(-3, 3, 10)
     line_y = (-w[2] - w[0] * line_x) / w[1]
@@ -89,11 +89,11 @@ def pocket(X, w, y):
     loc_wrong = compare(X, w, y)
     cnt, best_len, best_w = 0, len(loc_wrong), w
 
-    for i in range(DEFINE_POCKET_ITERS):
+    while (True):
         cnt += 1
         loc_wrong = compare(X, w, y)
-        print('迭代次数{} 分类错误个数{}'.format(cnt, len(loc_wrong)))
-        if (len(loc_wrong) <= 0): break
+        # print('迭代次数{} 分类错误个数{}'.format(cnt, len(loc_wrong)))
+        if (len(loc_wrong) <= 0 or (DEFINE_DATA_NON_SEPARABLE and cnt > DEFINE_POCKET_ITERS)): break
 
         w = update(X, w, y, loc_wrong)
         loc_wrong = compare(X, w, y)
@@ -102,7 +102,7 @@ def pocket(X, w, y):
             best_w = w
 
     end = time.clock()
-    # print('POCKET耗时：{}'.format(end - start))
+    print('最终迭代次数：{} POCKET耗时：{}'.format(cnt, end - start))
     print('参数W：{}'.format(best_w))
     line_x = np.linspace(-3, 3, 10)
     line_y = (-best_w[2] - best_w[0] * line_x) / best_w[1]
@@ -123,8 +123,8 @@ if __name__ == '__main__':
     elif DEFINE_DATA_SEPARABLE:
         X, y = make_blobs(n_samples=100, centers=2, n_features=2, center_box=(0, 10))
     elif DEFINE_DATA_NON_SEPARABLE:
-        # X, y = make_circles(n_samples=100, noise=0.05)
-        X, y = make_moons(n_samples=100, noise=0.1)
+        X, y = make_circles(n_samples=100, noise=0.05)
+        # X, y = make_moons(n_samples=100, noise=0.1)
 
     mean, sigma = X.mean(axis=0), X.std(axis=0)
     X = (X - mean) / sigma
@@ -135,6 +135,7 @@ if __name__ == '__main__':
     grouped = df.groupby('label')
     for key, group in grouped:
         group.plot(ax=ax, kind='scatter', x='x', y='y', label=key, color=colors[key])
+    # pyplot.show() # debug code
 
     X = np.concatenate((X, np.ones(X.shape[0]).reshape(X.shape[0], 1)), axis=1)  # 增加常数项
     y[np.where(y == 0)] = -1

@@ -1,0 +1,70 @@
+最终迭代次数：3 PLA耗时：0.0005057000000001644
+参数W：[[ 1.04216919]
+ [-1.03965992]
+ [ 0.        ]]
+最终迭代次数：3 POCKET耗时：0.00033789999999989107
+参数W：[[ 1.04216919]
+ [-1.03965992]
+ [ 0.        ]]
+
+ C:\Users\HongWuZ\PycharmProjects\NudtMLHomework\venv\Scripts\python.exe C:/Users/HongWuZ/PycharmProjects/NudtMLHomework/PLA.py
+最终迭代次数：5 PLA耗时：0.0008409999999998696
+C:/Users/HongWuZ/PycharmProjects/NudtMLHomework/PLA.py:63: DeprecationWarning: time.clock has been deprecated in Python 3.3 and will be removed from Python 3.8: use time.perf_counter or time.process_time instead
+参数W：[[0.19737945]
+  iters, start = 0, time.clock()
+ [1.87507796]
+ [0.        ]]
+最终迭代次数：5 POCKET耗时：0.0010084999999997457
+C:/Users/HongWuZ/PycharmProjects/NudtMLHomework/PLA.py:73: DeprecationWarning: time.clock has been deprecated in Python 3.3 and will be removed from Python 3.8: use time.perf_counter or time.process_time instead
+  end = time.clock()  # 计算耗时，请注释print
+C:/Users/HongWuZ/PycharmProjects/NudtMLHomework/PLA.py:88: DeprecationWarning: time.clock has been deprecated in Python 3.3 and will be removed from Python 3.8: use time.perf_counter or time.process_time instead
+  start = time.clock()
+C:/Users/HongWuZ/PycharmProjects/NudtMLHomework/PLA.py:104: DeprecationWarning: time.clock has been deprecated in Python 3.3 and will be removed from Python 3.8: use time.perf_counter or time.process_time instead
+  end = time.clock()
+参数W：[[0.19737945]
+ [1.87507796]
+ [0.        ]]
+
+ 最终迭代次数：1000 PLA耗时：0.04333469999999995
+参数W：[[ 1.09064047]
+ [-1.80349245]
+ [-1.        ]]
+最终迭代次数：1001 POCKET耗时：0.06997110000000006
+参数W：[[ 0.61680335]
+ [-1.73255872]
+ [ 0.        ]]
+
+ 最终迭代次数：10000 PLA耗时：0.5537964
+参数W：[[  4.06777992]
+ [-10.6054336 ]
+ [ -7.        ]]
+C:/Users/HongWuZ/PycharmProjects/NudtMLHomework/PLA.py:104: DeprecationWarning: time.clock has been deprecated in Python 3.3 and will be removed from Python 3.8: use time.perf_counter or time.process_time instead
+  end = time.clock()
+最终迭代次数：10001 POCKET耗时：0.7626147000000003
+参数W：[[ 0.59330332]
+ [-2.31078843]
+ [ 0.        ]]
+
+ 最终迭代次数：1000 PLA耗时：0.04569010000000029
+参数W：[[ 0.14109152]
+ [ 2.64161783]
+ [-1.        ]]
+C:/Users/HongWuZ/PycharmProjects/NudtMLHomework/PLA.py:104: DeprecationWarning: time.clock has been deprecated in Python 3.3 and will be removed from Python 3.8: use time.perf_counter or time.process_time instead
+  end = time.clock()
+最终迭代次数：1001 POCKET耗时：0.07083720000000016
+参数W：[[0.69150806]
+ [1.5448643 ]
+ [1.        ]]
+
+ 最终迭代次数：10000 PLA耗时：0.4671890000000003
+参数W：[[-0.62715797]
+ [-1.81116982]
+ [-1.        ]]
+C:/Users/HongWuZ/PycharmProjects/NudtMLHomework/PLA.py:73: DeprecationWarning: time.clock has been deprecated in Python 3.3 and will be removed from Python 3.8: use time.perf_counter or time.process_time instead
+  end = time.clock()  # 计算耗时，请注释print
+C:/Users/HongWuZ/PycharmProjects/NudtMLHomework/PLA.py:88: DeprecationWarning: time.clock has been deprecated in Python 3.3 and will be removed from Python 3.8: use time.perf_counter or time.process_time instead
+  start = time.clock()
+最终迭代次数：10001 POCKET耗时：0.8422937000000004
+参数W：[[ 1.12527339]
+ [-4.62207564]
+ [ 1.        ]]
