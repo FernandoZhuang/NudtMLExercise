@@ -3,17 +3,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 from sklearn import datasets
+from sklearn.datasets import make_circles
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import classification_report
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split, LeaveOneOut, KFold, RepeatedKFold
 
-DEFINE_NON_LINEARABLE = 1
+DEFINE_NON_LINEARABLE = 0
 DEFINE_VISUALIZE = 1  # 是否开启可视化。如果开启可视化，在Irish数据集中，只能选择两种属性，如此方能画在二维平面上。
+DEFINE_TWO_CLASS = 1
 DEFINE_DATA_SPLIT = 0  # 0: 按比例划分 1：留一法 2：P次K折
 
 
-def svm_show(X, y, classifier, resolution=0.02):
+def svm_multiple_class(X, y, classifier, resolution=0.02):
     '''
     :param X: 训练数据集
     :param y: 真实数据标签
@@ -40,23 +42,52 @@ def svm_show(X, y, classifier, resolution=0.02):
     plt.show()
 
 
+def svm_two_class(X, y, classifier):
+    '''
+    :param X: 预测数据集
+    :param y: 真实标签
+    :param classifier: SVM
+    :return: void
+    '''
+    ax = plt.gca()
+    plt.scatter(X[:, 0], X[:, 1], c=y, s=50, cmap='autumn')
+    xlim, ylim = ax.get_xlim(), ax.get_ylim()
+    xx, yy = np.linspace(xlim[0], xlim[1], 30), np.linspace(ylim[0], ylim[1], 30)
+    YY, XX = np.meshgrid(yy, xx)
+    xy = np.vstack([XX.ravel(), YY.ravel()]).T
+    Z = classifier.decision_function(xy).reshape(XX.shape)
+    ax.contour(XX, YY, Z, colors='k', levels=[-1, 0, 1], alpha=0.5, linestyles=['--', '-', '--'])
+    ax.scatter(classifier.support_vectors_[:, 0], classifier.support_vectors_[:, 1], s=100, linewidth=1,
+               facecolors='none',
+               edgecolors='k')
+    plt.show()
+
+
 if __name__ == '__main__':
     # region 线性和非线性数据的读取
     if DEFINE_NON_LINEARABLE == 0:
-        data = pd.read_csv('bill_authentication.csv')
-    else:
-        colnames = ['sepal-length', 'sepal-width', 'petal-length', 'petal-width', 'Class']
-        data = pd.read_csv('iris.data', names=colnames)
-
+        # data = pd.read_csv('bill_authentication.csv')
         iris = datasets.load_iris()
+        X = iris.data[:, [2, 3]]
+        X = X[0:100, :]  # 100~150代表virginica。剔除virginica后，数据是线性可分的。之所以剔除数据，是为了尝试作图
+        y = iris.target[0:100]
+    else:
+        # region 本地数据
+        # colnames = ['sepal-length', 'sepal-width', 'petal-length', 'petal-width', 'Class']
+        # data = pd.read_csv('iris.data', names=colnames)
+        # endregion
 
-    X = data.drop('Class', axis=1) if DEFINE_VISUALIZE == 0 else iris.data[:, [2, 3]]
-    y = data['Class'] if DEFINE_VISUALIZE == 0 else iris.target
+        # iris = datasets.load_iris()
+
+        X, y = make_circles(100, factor=.1, noise=.1)  # 使用圆圈表示非线性可分数据集
+
+    # X = data.drop('Class', axis=1) if DEFINE_VISUALIZE == 0 else iris.data[:, [2, 3]]
+    # y = data['Class'] if DEFINE_VISUALIZE == 0 else iris.target
     # endregion
 
     # region 数据划分
     if DEFINE_DATA_SPLIT == 0:
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
     elif DEFINE_DATA_SPLIT == 1:
         loo = LeaveOneOut()
         train, test = loo.split(X)
@@ -76,10 +107,10 @@ if __name__ == '__main__':
 
     # region 核函数选择
     if DEFINE_NON_LINEARABLE == 0:
-        svc_classifier = SVC(kernel='linear')
+        svc_classifier = SVC(kernel='linear', C=1E-3)
     else:
-        svc_classifier = SVC(C=1.0, kernel='poly', degree=8)
-        # svc_classifier = SVC(C=1.0, kernel='rbf')
+        # svc_classifier = SVC(C=1.0, kernel='poly', degree=8)
+        svc_classifier = SVC(C=1.0, kernel='rbf')
         # svc_classifier = SVC(C=1.0, kernel='sigmoid')
     # endregion
 
@@ -89,4 +120,8 @@ if __name__ == '__main__':
     print(classification_report(y_test, y_pred))
 
     if DEFINE_VISUALIZE:
-        svm_show(X_test, y_test, svc_classifier)
+        if DEFINE_TWO_CLASS:
+            # svm_two_class(X_test, y_test, svc_classifier)
+            svm_two_class(X_train, y_train, svc_classifier)  # 使用训练数据集画图，空心圈会和支持向量重叠
+        else:
+            svm_multiple_class(X_test, y_test, svc_classifier)
