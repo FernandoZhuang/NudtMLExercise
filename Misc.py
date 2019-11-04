@@ -1,1 +1,1 @@
-print(1E-2)
+accuracy = accuracy_score(y_pred=y_predict,y_true=y_test)

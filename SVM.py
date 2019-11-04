@@ -5,7 +5,7 @@ from matplotlib.colors import ListedColormap
 from sklearn import datasets
 from sklearn.datasets import make_circles
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, accuracy_score
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split, LeaveOneOut, KFold, RepeatedKFold
 
@@ -63,7 +63,39 @@ def svm_two_class(X, y, classifier):
     plt.show()
 
 
+def main(X_train, X_test, y_train, y_test):
+    # region 归一化
+    sc = StandardScaler()
+    sc.fit(X_train)
+    X_train, X_test = sc.transform(X_train), sc.transform(X_test)
+    # endregion
+
+    # region 核函数选择
+    if DEFINE_NON_LINEARABLE == 0:
+        svc_classifier = SVC(kernel='linear', C=10)
+    else:
+        # svc_classifier = SVC(C=1.0, kernel='poly', degree=8)
+        svc_classifier = SVC(C=1.0, kernel='rbf')
+        # svc_classifier = SVC(C=1.0, kernel='sigmoid')
+    # endregion
+
+    svc_classifier.fit(X_train, y_train)
+    # HACK: 是否根据可视化，把以下代码封装进svm_show函数中
+    y_predict = svc_classifier.predict(X_test)
+    print(classification_report(y_test, y_predict))
+    accuracies.append(accuracy_score(y_pred=y_predict, y_true=y_test))
+
+    if DEFINE_VISUALIZE:
+        if DEFINE_TWO_CLASS:
+            # svm_two_class(X_test, y_test, svc_classifier)
+            svm_two_class(X_train, y_train, svc_classifier)  # 使用训练数据集画图，空心圈会和支持向量重叠
+        else:
+            svm_multiple_class(X_test, y_test, svc_classifier)
+
+
 if __name__ == '__main__':
+    accuracies = []
+
     # region 线性和非线性数据的读取
     if DEFINE_NON_LINEARABLE == 0:
         # data = pd.read_csv('bill_authentication.csv')
@@ -87,41 +119,19 @@ if __name__ == '__main__':
 
     # region 数据划分
     if DEFINE_DATA_SPLIT == 0:
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+        main(X_train, X_test, y_train, y_test)
     elif DEFINE_DATA_SPLIT == 1:
         loo = LeaveOneOut()
-        train, test = loo.split(X)
-        X_train, X_test, y_train, y_test = X[train], X[test], y[train], y[test]
+        for train, test in loo.split(X):
+            X_train, X_test, y_train, y_test = X[train], X[test], y[train], y[test]
+            main(X_train, X_test, y_train, y_test)
     elif DEFINE_DATA_SPLIT == 2:
-        kf = KFold(n_splits=3)
-        # kf = RepeatedKFold(n_splits=3, n_repeats=3, random_state=0)
-        train, test = kf.split(X)
-        X_train, X_test, y_train, y_test = X[train], X[test], y[train], y[test]
+        # kf = KFold(n_splits=3)
+        kf = RepeatedKFold(n_splits=3, n_repeats=3, random_state=0)
+        for train, test in kf.split(X):
+            X_train, X_test, y_train, y_test = X[train], X[test], y[train], y[test]
+            main(X_train, X_test, y_train, y_test)
+
+        print('K折交叉验证 模型准确度：{}'.format(np.mean(accuracies)))
     # endregion
-
-    # region 归一化
-    sc = StandardScaler()
-    sc.fit(X_train)
-    X_train, X_test = sc.transform(X_train), sc.transform(X_test)
-    # endregion
-
-    # region 核函数选择
-    if DEFINE_NON_LINEARABLE == 0:
-        svc_classifier = SVC(kernel='linear', C=1E-3)
-    else:
-        # svc_classifier = SVC(C=1.0, kernel='poly', degree=8)
-        svc_classifier = SVC(C=1.0, kernel='rbf')
-        # svc_classifier = SVC(C=1.0, kernel='sigmoid')
-    # endregion
-
-    svc_classifier.fit(X_train, y_train)
-    # HACK: 是否根据可视化，把以下代码封装进svm_show函数中
-    y_pred = svc_classifier.predict(X_test)
-    print(classification_report(y_test, y_pred))
-
-    if DEFINE_VISUALIZE:
-        if DEFINE_TWO_CLASS:
-            # svm_two_class(X_test, y_test, svc_classifier)
-            svm_two_class(X_train, y_train, svc_classifier)  # 使用训练数据集画图，空心圈会和支持向量重叠
-        else:
-            svm_multiple_class(X_test, y_test, svc_classifier)
