@@ -1,1 +1,6 @@
-accuracy = accuracy_score(y_pred=y_predict,y_true=y_test)
+r = np.exp(-(X ** 2).sum(1))
+ax = plt.subplot(projection='3d')
+ax.scatter3D(X[:, 0], X[:, 1], r, c=y, s=50, cmap='autumn')
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+ax.set_zlabel('r')

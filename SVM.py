@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from mpl_toolkits import mplot3d
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 from sklearn import datasets
@@ -9,9 +10,10 @@ from sklearn.metrics import classification_report, accuracy_score
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split, LeaveOneOut, KFold, RepeatedKFold
 
-DEFINE_NON_LINEARABLE = 0
+DEFINE_NON_LINEARABLE = 1
 DEFINE_VISUALIZE = 1  # 是否开启可视化。如果开启可视化，在Irish数据集中，只能选择两种属性，如此方能画在二维平面上。
-DEFINE_TWO_CLASS = 1
+DEFINE_2CLASS_3D = 0
+DEFINE_TWO_CLASS = 0
 DEFINE_DATA_SPLIT = 0  # 0: 按比例划分 1：留一法 2：P次K折
 
 
@@ -74,7 +76,7 @@ def main(X_train, X_test, y_train, y_test):
     if DEFINE_NON_LINEARABLE == 0:
         svc_classifier = SVC(kernel='linear', C=10)
     else:
-        # svc_classifier = SVC(C=1.0, kernel='poly', degree=8)
+        #svc_classifier = SVC(C=1.0, kernel='poly', degree=8)
         svc_classifier = SVC(C=1.0, kernel='rbf')
         # svc_classifier = SVC(C=1.0, kernel='sigmoid')
     # endregion
@@ -105,16 +107,28 @@ if __name__ == '__main__':
         y = iris.target[0:100]
     else:
         # region 本地数据
-        # colnames = ['sepal-length', 'sepal-width', 'petal-length', 'petal-width', 'Class']
-        # data = pd.read_csv('iris.data', names=colnames)
+        colnames = ['sepal-length', 'sepal-width', 'petal-length', 'petal-width', 'Class']
+        data = pd.read_csv('iris.data', names=colnames)
         # endregion
 
-        # iris = datasets.load_iris()
+        iris = datasets.load_iris()
 
-        X, y = make_circles(100, factor=.1, noise=.1)  # 使用圆圈表示非线性可分数据集
+        # X, y = make_circles(100, factor=.1, noise=.1)  # 使用圆圈表示非线性可分数据集
 
-    # X = data.drop('Class', axis=1) if DEFINE_VISUALIZE == 0 else iris.data[:, [2, 3]]
-    # y = data['Class'] if DEFINE_VISUALIZE == 0 else iris.target
+    X = data.drop('Class', axis=1) if DEFINE_VISUALIZE == 0 else iris.data[:, [2, 3]]
+    y = data['Class'] if DEFINE_VISUALIZE == 0 else iris.target
+    # endregion
+
+    # region 二分类三维可视化
+    if DEFINE_NON_LINEARABLE and DEFINE_TWO_CLASS and DEFINE_2CLASS_3D:
+        r = np.exp(-(X ** 2).sum(1))
+        ax = plt.subplot(projection='3d')
+        ax.scatter3D(X[:, 0], X[:, 1], r, c=y, s=50, cmap='autumn')
+        ax.set_xlabel('x')
+        ax.set_ylabel('y')
+        ax.set_zlabel('r')
+
+        plt.show()
     # endregion
 
     # region 数据划分
